@@ -1,20 +1,11 @@
-com/krgcorporate/mongoaggregation/business/ZipCodeManager.java
- com.krgcorporate.mongoaggregation.business.ZipCodeManager
-com/krgcorporate/mongoaggregation/MongoAggregationApplication.java
- com.krgcorporate.mongoaggregation.MongoAggregationApplication
-com/krgcorporate/mongoaggregation/repotisory/StateRepository.java
- com.krgcorporate.mongoaggregation.repotisory.StateRepository
-com/krgcorporate/mongoaggregation/business/StateManager.java
- com.krgcorporate.mongoaggregation.business.StateManager
 com/krgcorporate/mongoaggregation/repotisory/ZipCodeRepository.java
  com.krgcorporate.mongoaggregation.repotisory.ZipCodeRepository
-com/krgcorporate/mongoaggregation/ws/ZipCodeController.java
- com.krgcorporate.mongoaggregation.ws.ZipCodeController
-com/krgcorporate/mongoaggregation/ws/StateController.java
- com.krgcorporate.mongoaggregation.ws.StateController
+com/krgcorporate/mongoaggregation/MongoAggregationApplication.java
+ com.krgcorporate.mongoaggregation.MongoAggregationApplication
 com/krgcorporate/mongoaggregation/domain/ZipCode.java
  com.krgcorporate.mongoaggregation.domain.ZipCode
  com.krgcorporate.mongoaggregation.domain.ZipCode$ZipCodeBuilder
-com/krgcorporate/mongoaggregation/domain/State.java
- com.krgcorporate.mongoaggregation.domain.State
- com.krgcorporate.mongoaggregation.domain.State$StateBuilder
+com/krgcorporate/mongoaggregation/business/ZipCodeManager.java
+ com.krgcorporate.mongoaggregation.business.ZipCodeManager
+com/krgcorporate/mongoaggregation/ws/ZipCodeController.java
+ com.krgcorporate.mongoaggregation.ws.ZipCodeController

@@ -2,7 +2,9 @@ package com.krgcorporate.mongoaggregation.business;
 
 import com.krgcorporate.mongoaggregation.domain.ZipCode;
 import com.krgcorporate.mongoaggregation.repotisory.ZipCodeRepository;
+import com.mongodb.BasicDBObject;
 import com.mongodb.client.model.Aggregates;
+import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Projections;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -13,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationExpression;
 import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.aggregation.Fields;
@@ -64,9 +67,17 @@ public class ZipCodeManager {
         ] );
      */
     public List<ZipCode> exe1() {
-        // ToDo
+        List<AggregationOperation> list = new ArrayList<>();
 
-        return new ArrayList<>();
+        list.add(
+                Aggregation.match(Criteria.where("state").is("MA"))
+        );
+
+        Aggregation agg = Aggregation.newAggregation(list);
+        AggregationResults<ZipCode> groupResults
+                = mongoTemplate.aggregate(agg, ZipCode.class, ZipCode.class);
+
+        return groupResults.getMappedResults();
     }
 
     /*
@@ -77,9 +88,15 @@ public class ZipCodeManager {
         ] );
      */
     public List<ZipCode> exe2() {
-        // ToDo
+        List<AggregationOperation> list = new ArrayList<>();
 
-        return new ArrayList<>();
+        list.add(Aggregation.match(Criteria.where("pop").gt(100000)));
+
+        Aggregation agg = Aggregation.newAggregation(list);
+        AggregationResults<ZipCode> groupResults
+                = mongoTemplate.aggregate(agg, ZipCode.class, ZipCode.class);
+
+        return groupResults.getMappedResults();
     }
 
     /*
@@ -91,9 +108,16 @@ public class ZipCodeManager {
         ] );
      */
     public List<ZipCode> exe3() {
-        // ToDo
+        List<AggregationOperation> list = new ArrayList<>();
 
-        return new ArrayList<>();
+        list.add(Aggregation.match(Criteria.where("pop").gt(50000)));
+        list.add(Aggregation.sort(Sort.Direction.ASC, "pop"));
+
+        Aggregation agg = Aggregation.newAggregation(list);
+        AggregationResults<ZipCode> groupResults
+                = mongoTemplate.aggregate(agg, ZipCode.class, ZipCode.class);
+
+        return groupResults.getMappedResults();
     }
 
     /*
@@ -104,9 +128,22 @@ public class ZipCodeManager {
         ] );
      */
     public List<Document> exe4() {
-        // ToDo
+        List<AggregationOperation> list = new ArrayList<>();
 
-        return new ArrayList<>();
+        list.add(Aggregation.group(
+                Fields.from(
+                        Fields.field("$state"),
+                        Fields.field("$city")
+                )
+        )
+                .sum("$pop")
+                .as("pop"));
+
+        Aggregation agg = Aggregation.newAggregation(list);
+        AggregationResults<Document> groupResults
+                = mongoTemplate.aggregate(agg, ZipCode.class, Document.class);
+
+        return groupResults.getMappedResults();
     }
 
     /*
@@ -118,9 +155,21 @@ public class ZipCodeManager {
         ] )
      */
     public List<Document> exe5() {
-        // ToDo
+        List<AggregationOperation> list = new ArrayList<>();
 
-        return new ArrayList<>();
+        list.add(Aggregation.group("$state", "$city")
+                .sum("$pop")
+                .as("pop"));
+
+        list.add(Aggregation.group("$_id.state")
+                .avg("pop")
+                .as("avgCityPop"));
+
+        Aggregation agg = Aggregation.newAggregation(list);
+        AggregationResults<Document> groupResults
+                = mongoTemplate.aggregate(agg, ZipCode.class, Document.class);
+
+        return groupResults.getMappedResults();
     }
 
     /*
@@ -146,9 +195,27 @@ public class ZipCodeManager {
         ] );
      */
     public List<Document> exe6() {
-        // ToDo
+        List<AggregationOperation> list = new ArrayList<>();
 
-        return new ArrayList<>();
+        list.add(Aggregation.group("$state", "$city")
+                .sum("$pop")
+                .as("pop"));
+
+        list.add(Aggregation.sort(Sort.Direction.DESC, "pop"));
+
+        list.add(
+                Aggregation.group("_id.state")
+                .last("_id.city").as("biggestCity")
+                .last("pop").as("biggestPop")
+                .first("_id.city").as("smallestCity")
+                .first("pop").as("smallestPop")
+        );
+
+        Aggregation agg = Aggregation.newAggregation(list);
+        AggregationResults<Document> groupResults
+                = mongoTemplate.aggregate(agg, ZipCode.class, Document.class);
+
+        return groupResults.getMappedResults();
     }
 
     /*
@@ -164,9 +231,19 @@ public class ZipCodeManager {
         ] );
      */
     public List<Document> exe7() {
-        // ToDo
+        List<AggregationOperation> list = new ArrayList<>();
 
-        return new ArrayList<>();
+        list.add(
+                Aggregation.group("$state")
+                .addToSet("$city")
+                .as("cities")
+        );
+
+        Aggregation agg = Aggregation.newAggregation(list);
+        AggregationResults<Document> groupResults
+                = mongoTemplate.aggregate(agg, ZipCode.class, Document.class);
+
+        return groupResults.getMappedResults();
     }
 
     /*
@@ -200,6 +277,46 @@ public class ZipCodeManager {
      */
     public List<Document> exe8() {
 
-        return new ArrayList<>();
+        List<AggregationOperation> list = new ArrayList<>();
+
+        list.add(Aggregation.group("$state", "$city")
+                .sum("$pop")
+                .as("pop"));
+
+        list.add(Aggregation.sort(Sort.Direction.ASC, "pop"));
+
+        list.add(
+                Aggregation.group("_id.state")
+                        .last("_id.city").as("biggestCity")
+                        .last("pop").as("biggestPop")
+                        .first("_id.city").as("smallestCity")
+                        .first("pop").as("smallestPop")
+        );
+
+        list.add(
+                Aggregation.project()
+                        .and("_id").as("state")
+                .andExclude("_id")
+                .andExpression("{ name: \"$biggestCity\",  pop: \"$biggestPop\" }").as("biggestCity")
+                .andExpression("{ name: \"$smallestCity\", pop: \"$smallestPop\" }").as("smallestCity")
+        );
+/*
+        list.add(
+                (AggregationOperation) Aggregates.project(
+                        Projections.fields(
+                                Projections.excludeId(),
+                                Projections.computed("state", "$_id"),
+                                Projections.computed("biggestCity", Filters.and(Filters.eq("name", "$biggestCity"), Filters.eq("pop", "$biggestPop"))),
+                                Projections.computed("smallestCity", Filters.and(Filters.eq("name", "$smallestCity"), Filters.eq("pop", "$smallestPop")))
+                        )
+                )
+        );
+        */
+
+        Aggregation agg = Aggregation.newAggregation(list);
+        AggregationResults<Document> groupResults
+                = mongoTemplate.aggregate(agg, ZipCode.class, Document.class);
+
+        return groupResults.getMappedResults();
     }
 }
